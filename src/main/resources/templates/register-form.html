@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/versions/bulma-no-dark-mode.min.css">
+
+    <title>Sign up</title>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div>
+    <h1 class="title is-1 text-center">Sign up</h1>
+</div>
+<div class="flex items-center justify-center">
+    <div class="card w-[90vw] sm:w-[70vw] md:w-[50vw] mx-4">
+        <form method="post" th:object="${registerUserDto}" class="card-content space-y-4">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <div>
+                <label>
+                    First name*
+                    <input class="input"
+                           th:classappend="${#fields.hasErrors('firstName')} ? 'is-danger' : ''"
+                           type="text"
+                           placeholder="John"
+                           th:field="${registerUserDto.firstName}"
+                    />
+                </label>
+                <p th:if="${#fields.hasErrors('firstName')}"
+                   th:errorclass="text-red-600"
+                   th:errors="${registerUserDto.firstName}">
+                </p>
+            </div>
+
+            <div>
+                <label>
+                    Last name*
+                    <input class="input"
+                           th:classappend="${#fields.hasErrors('lastName')} ? 'is-danger' : ''"
+                           type="text"
+                           placeholder="Doe"
+                           th:field="${registerUserDto.lastName}"
+                    />
+                </label>
+                <p th:if="${#fields.hasErrors('lastName')}"
+                   th:errorclass="text-red-600"
+                   th:errors="${registerUserDto.lastName}">
+                </p>
+            </div>
+
+            <div>
+                <label>
+                    Email*
+                    <input class="input"
+                           th:classappend="${#fields.hasErrors('email')} ? 'is-danger' : ''"
+                           type="text"
+                           placeholder="jonhdoe@example.com"
+                           th:field="${registerUserDto.email}"
+                    />
+                </label>
+                <p th:if="${#fields.hasErrors('email')}"
+                   th:errorclass="text-red-600"
+                   th:errors="${registerUserDto.email}">
+                </p>
+            </div>
+
+            <div>
+                <label>
+                    Phone
+                    <input class="input"
+                           th:classappend="${#fields.hasErrors('phone')} ? 'is-danger' : ''"
+                           type="tel"
+                           placeholder="+100000000"
+                           th:field="${registerUserDto.phone}"
+                    />
+                </label>
+                <p th:if="${#fields.hasErrors('phone')}"
+                   th:errorclass="text-red-600"
+                   th:errors="${registerUserDto.phone}">
+                </p>
+            </div>
+
+            <div>
+                <label>
+                    Address
+                    <input class="input"
+                           th:classappend="${#fields.hasErrors('address')} ? 'is-danger' : ''"
+                           type="text"
+                           placeholder="example str. 2"
+                           th:field="${registerUserDto.address}"
+                    />
+                </label>
+                <p th:if="${#fields.hasErrors('address')}"
+                   th:errorclass="text-red-600"
+                   th:errors="${registerUserDto.address}">
+                </p>
+            </div>
+
+            <div>
+                <label>
+                    Password*
+                    <input class="input"
+                           th:classappend="${#fields.hasErrors('password')} ? 'is-danger' : ''"
+                           type="password"
+                           placeholder="********"
+                           th:field="${registerUserDto.password}"
+                    />
+                </label>
+                <p th:if="${#fields.hasErrors('password')}"
+                   th:errorclass="text-red-600"
+                   th:errors="${registerUserDto.password}">
+                </p>
+            </div>
+
+            <div>
+                <label>
+                    Repeat password*
+                    <input class="input"
+                           th:classappend="${#fields.hasErrors('repeatPassword')} ? 'is-danger' : ''"
+                           type="password"
+                           placeholder="********"
+                           th:field="${registerUserDto.repeatPassword}"
+                    />
+                </label>
+                <p th:if="${#fields.hasErrors('repeatPassword')}"
+                   th:errorclass="text-red-600"
+                   th:errors="${registerUserDto.repeatPassword}">
+                </p>
+            </div>
+
+            <div th:if="${error}"
+               class="text-red-600">
+                Register error: <span th:text="${error}"></span>
+            </div>
+            <div>
+                <button class="button is-primary" type="submit">Create an account</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

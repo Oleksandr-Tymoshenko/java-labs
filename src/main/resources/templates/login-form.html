@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/versions/bulma-no-dark-mode.min.css">
+
+    <title>Login</title>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div>
+    <h1 class="title is-1 text-center">Login</h1>
+</div>
+<div class="flex items-center justify-center">
+    <div class="card w-[90vw] sm:w-[70vw] md:w-[50vw] mx-4">
+        <form th:action="@{/auth/perform_login}" method="post" class="card-content space-y-4">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <article th:if="${param.error}" class="message is-danger">
+                <div class="message-body">
+                    Incorrect username or password!
+                </div>
+            </article>
+            <article th:if="${param.logout}" class="message is-success">
+                <div class="message-body">
+                    You have successfully logged out.
+                </div>
+            </article>
+            <article th:if="${param.registered}" class="message is-success">
+                <div class="message-body">
+                    You have successfully registered. Please log in
+                </div>
+            </article>
+            <div>
+                <label>
+                    Email*
+                    <input class="input"
+                           id="username"
+                           name="username"
+                           type="text"
+                           placeholder="jonhdoe@example.com"
+                    />
+                </label>
+            </div>
+
+            <div>
+                <label>
+                    Password*
+                    <input class="input"
+                           id="password"
+                           name="password"
+                           type="password"
+                           placeholder="********"
+
+                    />
+                </label>
+            </div>
+
+            <div th:if="${error}"
+                 class="text-red-600">
+                <span th:text="${error}"></span>
+            </div>
+            <div>
+                <button class="button is-primary" type="submit">Login</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
