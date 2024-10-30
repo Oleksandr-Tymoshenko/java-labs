@@ -7,12 +7,18 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/versions/bulma-no-dark-mode.min.css">
+    <script src="https://kit.fontawesome.com/058dd5b88f.js" crossorigin="anonymous"></script>
     <title>Products</title>
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="mx-20">
     <h1 class="title is-1 text-center">Products</h1>
+    <article th:if="${param.deleted}" class="message is-success">
+        <div class="message-body">
+            Successfully deleted product
+        </div>
+    </article>
     <div class="flex justify-center">
         <div class="card w-[90vw] sm:w-[70vw] md:w-[50vw] mx-4" sec:authorize="hasRole('ADMIN')">
             <div class="card-content">
@@ -71,71 +77,44 @@
         </div>
     </div>
 
-    <div class="flex">
-        <div class="card w-[20%]">
-            <div class="card-content">
-                <p class="subtitle is-2 text-center">Filters</p>
-                <form action="#" th:action="@{/products}" method="get"
-                      class="space-y-4 flex flex-col justify-center my-5">
-                    <div>
-                        <label>Min Price
-                            <input
-                                    class="input"
-                                    type="number"
-                                    min="0"
-                                    name="minPrice"
-                                    step="0.01"
-                                    placeholder="0"
-                                    th:value="${minPrice != null ? minPrice : ''}"
-                            />
-                        </label>
-                    </div>
-                    <div>
-                        <label>Max Price
-                            <input
-                                    class="input"
-                                    type="number"
-                                    name="maxPrice"
-                                    step="0.01"
-                                    placeholder="1000"
-                                    th:value="${maxPrice != null ? maxPrice : ''}"
-                            />
-                        </label>
-                    </div>
-                    <div>
-                        <button class="button is-primary" type="submit">Filter</button>
-                    </div>
-                </form>
-            </div>
+    <div class="card">
+        <div class="card-content">
+            <p class="subtitle is-2 text-center">Filters</p>
+            <form action="#" th:action="@{/products}" method="get"
+                  class="space-y-4 flex flex-col justify-center my-5">
+                <div>
+                    <label>Min Price
+                        <input
+                                class="input"
+                                type="number"
+                                min="0"
+                                name="minPrice"
+                                step="0.01"
+                                placeholder="0"
+                                th:value="${minPrice != null ? minPrice : ''}"
+                        />
+                    </label>
+                </div>
+                <div>
+                    <label>Max Price
+                        <input
+                                class="input"
+                                type="number"
+                                name="maxPrice"
+                                step="0.01"
+                                placeholder="1000"
+                                th:value="${maxPrice != null ? maxPrice : ''}"
+                        />
+                    </label>
+                </div>
+                <div>
+                    <button class="button is-primary" type="submit">Filter</button>
+                </div>
+            </form>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mx-20 w-[79%]">
-            <div th:each="product : ${products}">
-                <a th:href="@{/products/{id}(id=${product.id})}">
-                    <div class="card h-full relative pb-2">
-                        <div class="card-image">
-                            <figure class="image is-4by3">
-                                <img
-                                        class="object-cover"
-                                        th:src="${product.image}"
-                                        alt="Placeholder image"
-                                />
-                            </figure>
-                        </div>
-                        <div class="card-content">
-                            <p class="title is-5 line-clamp-1" th:text="${product.name}"></p>
-                            <div class="content">
-                                <p class="line-clamp-4" th:text="${product.description}"></p>
-                            </div>
-                        </div>
-                        <div class="relative bottom-0 right-0 px-5 text-right">
-                            <p class="text-xl font-black mb-2" th:text="'$' + ${product.price}"></p>
-                            <div class="text-sm text-slate-300"
-                                 th:text="${#temporals.format(product.createdAt, 'dd MMMM yyyy')}"></div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
+    </div>
+    <div>
+        <div th:replace="~{fragments/product-list :: productListFragment()}" th:with="products=${products}"></div>
     </div>
 
 

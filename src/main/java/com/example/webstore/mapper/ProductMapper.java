@@ -14,5 +14,6 @@ import org.mapstruct.NullValueCheckStrategy;
 )
 public interface ProductMapper {
     Product toProduct(CreateProductDto productDto);
+
     ProductDto toProductDto(Product product);
 }

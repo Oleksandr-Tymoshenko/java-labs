@@ -7,7 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/versions/bulma-no-dark-mode.min.css">
-    <title>Web store</title>
+    <script src="https://kit.fontawesome.com/058dd5b88f.js" crossorigin="anonymous"></script>
+    <title>Nike</title>
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
@@ -17,34 +18,7 @@
 </div>
 <div class="mx-20">
     <p class="title is-4">Our newest collection:</p>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mx-20">
-        <div th:each="product : ${recentProducts}">
-            <a th:href="@{/products/{id}(id=${product.id})}">
-                <div class="card h-full relative pb-2">
-                    <div class="card-image">
-                        <figure class="image is-4by3">
-                            <img
-                                    class="object-cover"
-                                    th:src="${product.image}"
-                                    alt="Placeholder image"
-                            />
-                        </figure>
-                    </div>
-                    <div class="card-content">
-                        <p class="title is-5 line-clamp-1" th:text="${product.name}"></p>
-                        <div class="content">
-                            <p class="line-clamp-4" th:text="${product.description}"></p>
-                        </div>
-                    </div>
-                    <div class="relative bottom-0 right-0 px-5 text-right">
-                        <p class="text-xl font-black mb-2" th:text="'$' + ${product.price}"></p>
-                        <div class="text-sm text-slate-300"
-                             th:text="${#temporals.format(product.createdAt, 'dd MMMM yyyy')}"></div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
+    <div th:replace="~{fragments/product-list :: productListFragment()}" th:with="products=${products}"></div>
 </div>
 </body>
 </html>
