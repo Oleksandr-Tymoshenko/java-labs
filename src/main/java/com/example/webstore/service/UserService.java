@@ -8,8 +8,10 @@ import com.example.webstore.model.Role;
 import com.example.webstore.model.User;
 import com.example.webstore.repository.RoleRepository;
 import com.example.webstore.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,5 +32,10 @@ public class UserService {
         user.setRole(roleRepository.getRoleByName(Role.RoleName.USER));
         user.setCreatedAt(LocalDateTime.now());
         return userMapper.toResponseDto(userRepository.save(user));
+    }
+
+    public User findUserFromAuthentication(Authentication authentication) {
+        return userRepository.findUserByEmail(authentication.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Can't find user"));
     }
 }

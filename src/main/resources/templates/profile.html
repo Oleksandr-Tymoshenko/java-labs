@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/versions/bulma-no-dark-mode.min.css">
+    <script src="https://kit.fontawesome.com/058dd5b88f.js" crossorigin="anonymous"></script>
+    <title>Profile</title>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="flex justify-between">
+    <div class="w-[60%]">
+        <h2 class="text-xl font-bold text-center mb-4">Orders</h2>
+        <div th:if="${#lists.isEmpty(orders)}" class="text-center">
+            <p>You have no orders 😢 </p>
+            <a href="/products" class="button is-black">
+                    <i class="fa-solid fa-bag-shopping mr-2"></i> Lets go shopping
+            </a>
+        </div>
+        <div class="card p-8 mb-8" th:each="order : ${orders}">
+            <div class="flex items-center justify-between">
+                <p th:text="${#temporals.format(order.orderDate(), 'dd MMMM yyyy')}"></p>
+                <p th:text="${'Status: ' + order.status()}"></p>
+            </div>
+            <h3 class="my-4">Order items <span class="tag is-black" th:text="${order.orderItems().size()}"></span></h3>
+            <div class="flex items-center gap-4" th:each="item: ${order.orderItems()}">
+                <div class="w-[150px] rounded-xl overflow-hidden">
+                    <img
+                            th:src="${item.productImage()}"
+                            class="object-contain"
+                            alt="Product image"
+                    />
+                </div>
+                <div class="">
+                    <p class="title is-4" th:text="${item.productName()}"></p>
+                    <p>Quantity: <span th:text="${item.quantity()}"></span></p>
+                    <p>Price: <span class="font-semibold" th:text="${'$ ' + item.price()}"></span></p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <p>Phone number: <span th:text="${order.phone()}"></span></p>
+                <p>Shipping address: <span th:text="${order.shippingAddress()}"></span></p>
+                Total: <span class="font-semibold" th:text="${'$ ' + order.total()}"></span>
+            </div>
+        </div>
+    </div>
+    <div class="w-[30%]">
+        <h2>User information</h2>
+        <p th:text="${user.firstName + ' ' + user.lastName}"></p>
+        <p>Email: <span th:text="${user.getEmail()}"></span> </p>
+        <p>Phone: <span th:text="${user.getPhone()}"></span> </p>
+        <p>Shipping Address: <span th:text="${user.getAddress()}"></span> </p>
+    </div>
+</div>
+</body>
+</html>

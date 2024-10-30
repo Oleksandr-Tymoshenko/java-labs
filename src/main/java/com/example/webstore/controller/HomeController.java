@@ -16,7 +16,7 @@ public class HomeController {
     @GetMapping({"", "/"})
     public String home(Model model) {
         List<ProductDto> recentProducts = productService.getRecentProducts();
-        model.addAttribute("recentProducts", recentProducts);
+        model.addAttribute("products", recentProducts);
         return "index";
     }
 }

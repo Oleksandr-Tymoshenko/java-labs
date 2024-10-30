@@ -1,0 +1,48 @@
+<div th:fragment="productCardFragment()" class="relative" xmlns:sec="http://www.thymeleaf.org">
+    <form th:action="@{/products/{id}/delete(id=${product.id})}" method="post" th:object="${product}" sec:authorize="hasRole('ADMIN')">
+        <input type="hidden" name="_method" value="delete" />
+        <button type="submit"
+                class="button is-danger is-outlined absolute top-2 right-2 z-10"
+                title="Delete product">
+            <span class="icon is-small">
+                <i class="fa-solid fa-trash"></i>
+            </span>
+        </button>
+    </form>
+    <a>
+        <div class="card h-full relative pb-2">
+
+            <div class="card-image">
+                <figure class="image is-4by3">
+                    <img
+                            class="object-cover"
+                            th:src="${product.image}"
+                            alt="Placeholder image"
+                    />
+                </figure>
+            </div>
+            <div class="card-content">
+                <p class="title is-5 line-clamp-1" th:text="${product.name}"></p>
+                <div class="content">
+                    <p class="line-clamp-4" th:text="${product.description}"></p>
+                </div>
+            </div>
+            <div class="relative bottom-0 right-0 px-5 text-right">
+                <p class="text-xl font-black mb-2" th:text="'$' + ${product.price}"></p>
+            </div>
+            <div class="p-4">
+                <div class="flex items-center gap-4 mb-2">
+                    Quantity:
+                    <input type="number" class="input w-full quantity-input click-prevent-default" value="1" min="1"
+                           th:id="'quantity-' + ${product.id}"/>
+                </div>
+                <button class="button is-black w-full click-prevent-default add-to-cart" type="button"
+                        th:data-id="${product.id}">
+                    <i class="fa-solid fa-bag-shopping mr-2"></i> Add to cart
+                </button>
+                <div class="text-sm text-slate-300"
+                     th:text="${#temporals.format(product.createdAt, 'dd MMMM yyyy')}"></div>
+            </div>
+        </div>
+    </a>
+</div>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/versions/bulma-no-dark-mode.min.css">
+    <script src="https://kit.fontawesome.com/058dd5b88f.js" crossorigin="anonymous"></script>
+    <title>Shopping cart</title>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="flex justify-between gap-2 px-20">
+    <div class="cart-items">
+        <h2 class="text-xl font-semibold text-center">Shopping cart</h2>
+        <div th:if="${#lists.isEmpty(cartItems)}">
+            <p>Your cart is empty</p>
+        </div>
+        <div th:if="${!#lists.isEmpty(cartItems)}" id="cart-items">
+            <div class="card cart-item-card flex items-center gap-4 relative p-8 mb-8"
+                 th:each="item : ${cartItems}"
+                 th:data-id="${item.id}">
+                <button class="delete is-large delete-item absolute top-4 right-4"></button>
+                <div class="card-image w-[200px]">
+                    <img
+                            th:src="${item.productImage()}"
+                            class="object-contain"
+                            alt="Product image"
+                    />
+                </div>
+                <div class="card-content">
+                    <p class="title is-4" th:text="${item.productName()}"></p>
+                    <div class="flex gap-4 items-center">
+                        Price:
+                        <span th:text="'$ ' + ${item.productPrice}"></span>
+                        *
+                        <input type="number" min="1"
+                               th:value="${item.quantity}"
+                               class="input quantity-input w-[50px]">
+                        =
+                        <span class="font-semibold"
+                              th:text="'$ ' + ${item.productPrice * item.quantity}"></span>
+                    </div>
+
+                </div>
+            </div>
+            <button id="clear-cart" class="button is-danger is-outlined">X Clear all</button>
+        </div>
+    </div>
+    <div class="order-summary">
+        <form th:action="@{/checkout}" method="post" th:object="${createOrderRequestDto}">
+            <div class="space-y-6">
+                <h3 class="text-xl font-bold">Order summary</h3>
+                <div>
+                    <label>
+                        Shipping address*
+                        <input class="input"
+                               th:classappend="${#fields.hasErrors('shippingAddress')} ? 'is-danger' : ''"
+                               type="text"
+                               placeholder="example Street"
+                               th:field="${createOrderRequestDto.shippingAddress}"
+                        />
+                    </label>
+                    <p th:if="${#fields.hasErrors('shippingAddress')}"
+                       th:errorclass="text-red-600"
+                       th:errors="${createOrderRequestDto.shippingAddress}">
+                    </p>
+                </div>
+                <div>
+                    <label>
+                        Phone number*
+                        <input class="input"
+                               th:classappend="${#fields.hasErrors('phone')} ? 'is-danger' : ''"
+                               type="tel"
+                               placeholder="+100000000"
+                               th:field="${createOrderRequestDto.phone}"
+                        />
+                    </label>
+                    <p th:if="${#fields.hasErrors('phone')}"
+                       th:errorclass="text-red-600"
+                       th:errors="${createOrderRequestDto.phone}">
+                    </p>
+                </div>
+                <div>
+                    <label>
+                        <input class="checkbox"
+                               th:classappend="${#fields.hasErrors('saveUserInfo')} ? 'is-danger' : ''"
+                               type="checkbox"
+                               th:field="${createOrderRequestDto.saveUserInfo}"
+                        />
+                        Save this information for my account
+                    </label>
+                </div>
+                <div>
+                    <p class="font-semibold text-lg">
+                        Order total: <span id="total-price" th:text="'$ ' + ${totalPrice}"></span>
+                    </p>
+
+                    <button class="button is-black w-full"
+                            th:disabled="${#lists.isEmpty(cartItems)}">
+                        Checkout
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const cartItemsContainer = document.getElementById('cart-items');
+
+        if (cartItemsContainer) {
+            // Удаление товара из корзины
+            cartItemsContainer.addEventListener('click', function (event) {
+                if (event.target.classList.contains('delete-item')) {
+                    const itemCard = event.target.closest('.cart-item-card');
+                    const itemId = itemCard.getAttribute('data-id');
+
+                    fetch(`/api/cart/cart-items/${itemId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                itemCard.remove();
+                                updateTotalPrice();
+                            } else {
+                                alert('Couldn\'t remove item');
+                            }
+                        });
+                }
+            });
+
+            // Изменение количества товара
+            cartItemsContainer.addEventListener('change', function (event) {
+                if (event.target.classList.contains('quantity-input')) {
+                    const itemCard = event.target.closest('.cart-item-card');
+                    const itemId = itemCard.getAttribute('data-id');
+                    const newQuantity = event.target.value;
+
+                    fetch(`/api/cart/cart-items/${itemId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({quantity: newQuantity})
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                return response.json();
+                            } else {
+                                alert('Couldn\'t change quantity');
+                            }
+                        })
+                        .then(data => {
+                            const updatedCartItem = data.cartItems.find(item => item.id === Number(itemId));
+                            if (updatedCartItem) {
+                                itemCard.querySelector('.font-semibold').textContent = `$ ${Math.round(Number(updatedCartItem.productPrice * updatedCartItem.quantity))}`;
+                                updateTotalPrice();
+                            }
+                        });
+                }
+            });
+        }
+
+        // Очистка всей корзины
+        const clearCartButton = document.getElementById('clear-cart');
+        if (clearCartButton) {
+            clearCartButton.addEventListener('click', function () {
+                fetch('/api/cart', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            cartItemsContainer.innerHTML = '';
+                            document.getElementById('total-price').textContent = '$ 0';
+                        } else {
+                            alert('Couldn\'t clear cart');
+                        }
+                    });
+            });
+        }
+
+        // Функция для обновления общей стоимости
+        function updateTotalPrice() {
+            let totalPrice = 0;
+            cartItemsContainer.querySelectorAll('.cart-item-card').forEach(card => {
+                const itemTotal = parseFloat(card.querySelector('.font-semibold').textContent.replace('$ ', ''));
+                totalPrice += itemTotal;
+            });
+            document.getElementById('total-price').textContent = `$ ${totalPrice}`;
+        }
+    });
+</script>
+</body>
+</html>

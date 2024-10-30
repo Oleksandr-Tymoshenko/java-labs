@@ -45,4 +45,11 @@ public class ProductController {
         productService.createProduct(productDto);
         return "redirect:/products";
     }
+
+    @PostMapping("/{productId}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteProduct(@PathVariable Long productId) {
+        productService.deleteProduct(productId);
+        return "redirect:/products?deleted=true";
+    }
 }

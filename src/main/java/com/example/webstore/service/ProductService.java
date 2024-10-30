@@ -46,6 +46,10 @@ public class ProductService {
         productMapper.toProductDto(productRepository.save(product));
     }
 
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
+    }
+
     public List<ProductDto> getRecentProducts() {
         Pageable pageable = PageRequest.of(0, 4);
         return productRepository.getRecentProducts(pageable)
